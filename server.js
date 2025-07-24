@@ -12,35 +12,39 @@ import appointmentRoutes from "./routes/appointmentRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
 import quizRoutes from "./routes/quizRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
-import userRoutes from './routes/userRoutes.js';
+import userRoutes from "./routes/userRoutes.js";
 
 const app = express();
 connectDB();
 
-app.use(cors());
+// ✅ CORS configuration to allow local + deployed frontend
+app.use(cors({
+  origin: [
+    'http://localhost:5173' // 🔁 Replace with your actual Vercel frontend URL
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true
+}));
+
+// ✅ Parses incoming JSON
 app.use(express.json());
 
-// Auth & general
+// ✅ API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/quiz", quizRoutes);
-
-// Admin
 app.use("/api/admin", adminRoutes);
+app.use("/api/doctors", doctorRoutes);
+app.use("/api/doctor", doctorAppointmentRoutes);
+app.use("/api/users", userRoutes);
 
-// Doctor-specific
-app.use("/api/doctors", doctorRoutes);             // ✅ Handles /profile, /:id, etc.
-app.use("/api/doctor", doctorAppointmentRoutes);   // ✅ Handles /appointments for logged-in doctor
-
-app.use('/api/users', userRoutes);
-// inside app.use(...)
-
-// Fallback for unhandled routes
+// ❌ Catch-all for undefined routes
 app.use((req, res) => {
   res.status(404).json({ error: "Route not found" });
 });
 
+// ✅ Start the server
 app.listen(process.env.PORT, () => {
   console.log(`✅ Server running at http://localhost:${process.env.PORT}`);
 });
