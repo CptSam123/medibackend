@@ -20,7 +20,7 @@ connectDB();
 // ✅ CORS configuration to allow local + deployed frontend
 app.use(cors({
   origin: [
-    'http://localhost:5173' // 🔁 Replace with your actual Vercel frontend URL
+    'http://localhost:5173', 'https://medimindhealth.netlify.app' // 🔁 Replace with your actual Vercel frontend URL
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true
