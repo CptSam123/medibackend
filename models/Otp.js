@@ -1,14 +1,13 @@
-import mongoose from 'mongoose';
+// server/models/Otp.js
+import mongoose from "mongoose";
 
-const otpSchema = new mongoose.Schema({
-  email:     { type: String, required: true },
-  code:      { type: String, required: true },
-  expiresAt: { type: Date,   required: true },
-}, {
-  timestamps: true,
-});
+const OtpSchema = new mongoose.Schema({
+  email: { type: String, required: true, index: true },
+  codeHash: { type: String, required: true }, // store hashed OTP
+  expiresAt: { type: Date, required: true, index: true },
+}, { timestamps: true });
 
-// Automatically remove expired OTPs
-otpSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+// Optional: create a TTL index to auto-delete expired OTPs (Mongo will remove documents after `expiresAt`)
+OtpSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
-export default mongoose.model('Otp', otpSchema);
+export default mongoose.models.Otp || mongoose.model("Otp", OtpSchema);

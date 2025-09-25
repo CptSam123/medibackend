@@ -1,24 +1,16 @@
-// server/models/User.js
-import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
+// server/models/User.js (excerpt)
+import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
   name: String,
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  role: { type: String, enum: ['user','doctor','admin'], default: 'user' },
-
-  // OTP fields
-  passwordResetOTP: String,
-  passwordResetOTPExpires: Date,
+  email: { type: String, unique: true, required: true, index: true },
+  password: { type: String, required: true }, // bcrypt hashed
+  role: { type: String, default: "user" },
+  isVerified: { type: Boolean, default: false }, // used if you want email verification
+  // fields for password reset
+  passwordResetOTP: { type: String }, // hashed OTP for reset
+  passwordResetOTPExpires: { type: Date },
+  // add other fields...
 }, { timestamps: true });
 
-// hash password on save
-userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-  next();
-});
-
-export default mongoose.model('User', userSchema);
+export default mongoose.models.User || mongoose.model("User", UserSchema);
